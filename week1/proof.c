@@ -4,10 +4,10 @@
 
 // function declarations
 int root_task(int uni_size);
-int client_task(int my_rank, int num_arg);
+void client_task(int my_rank, int num_arg);
 int check_args(int argc, char **argv);
-int check_uni_size(int uni_size);
-int check_task(int uni_size, int my_rank, int num_arg);
+void check_uni_size(int uni_size);
+void check_task(int uni_size, int my_rank, int num_arg);
 
 int main(int argc, char **argv) 
 {
@@ -65,7 +65,7 @@ int root_task(int uni_size)
 	return output_sum;
 }
 
-int client_task(int my_rank, int num_arg)
+void client_task(int my_rank, int num_arg)
 {
 	// creates and initialies transmission variables
 	int send_message, count, dest, tag;
@@ -80,8 +80,6 @@ int client_task(int my_rank, int num_arg)
 
 	// sends the message
 	MPI_Send(&send_message, count, MPI_INT, dest, tag, MPI_COMM_WORLD);
-
-	return 0;
 }
 
 int check_args(int argc, char **argv)
@@ -107,14 +105,14 @@ int check_args(int argc, char **argv)
 	return num_arg;
 }
 
-int check_uni_size(int uni_size)
+void check_uni_size(int uni_size)
 {
 	// sets the minimum universe size
 	int min_uni_size = 1;
 	// checks there are sufficient tasks to communicate with
 	if (uni_size >= min_uni_size)
 	{
-		return 0;
+		return;
 	} // end if (uni_size >= min_uni_size)
 	else // i.e. uni_size < min_uni_size
 	{
@@ -125,11 +123,9 @@ int check_uni_size(int uni_size)
 		// and exit COMPLETELY
 		exit(-1);
 	}
-
-	return 0;
 }
 
-int check_task(int uni_size, int my_rank, int num_arg)
+void check_task(int uni_size, int my_rank, int num_arg)
 {
 	// checks which process is running and calls the appropriate task
 	if (0 == my_rank)

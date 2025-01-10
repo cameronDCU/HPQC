@@ -7,6 +7,7 @@ int root_task(int uni_size);
 int client_task(int my_rank, int num_arg);
 int check_args(int argc, char **argv);
 int check_uni_size(int uni_size, int my_rank, int num_arg);
+int check_task(int uni_size, int my_rank, int num_arg);
 
 int main(int argc, char **argv) 
 {
@@ -29,6 +30,9 @@ int main(int argc, char **argv)
 	
 	// checks the universe size is correct
 	check_uni_size(uni_size, my_rank, num_arg);
+
+	// checks what task to do and does it
+	check_task(uni_size, my_rank, num_arg);
 
 	// finalise MPI
 	ierror = MPI_Finalize();
@@ -110,15 +114,6 @@ int check_uni_size(int uni_size, int my_rank, int num_arg)
 	// checks there are sufficient tasks to communicate with
 	if (uni_size >= min_uni_size)
 	{
-		// checks which process is running and calls the appropriate task
-		if (0 == my_rank)
-		{
-			root_task(uni_size);
-		} // end if (0 == my_rank)
-		else // i.e. (0 != my_rank)
-		{
-			client_task(my_rank, num_arg);
-		} // end else // i.e. (0 != my_rank)
 	} // end if (uni_size >= min_uni_size)
 	else // i.e. uni_size < min_uni_size
 	{
@@ -129,4 +124,17 @@ int check_uni_size(int uni_size, int my_rank, int num_arg)
 		// and exit COMPLETELY
 		exit(-1);
 	}
+}
+
+int check_task(int uni_size, int my_rank, int num_arg)
+{
+	// checks which process is running and calls the appropriate task
+	if (0 == my_rank)
+	{
+		root_task(uni_size);
+	} // end if (0 == my_rank)
+	else // i.e. (0 != my_rank)
+	{
+		client_task(my_rank, num_arg);
+	} // end else // i.e. (0 != my_rank)
 }

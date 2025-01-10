@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <mpi.h>
 
+// function declaration
+int root_task(int uni_size);
+
 int main(int argc, char **argv) 
 {
 	// declare and initialise error handling variable
@@ -45,24 +48,7 @@ int main(int argc, char **argv)
 	{
 		if (0 == my_rank)
 		{
-			// creates and intiialises the variable for the final output
-			int output_sum = 0;
-
-			// iterates through all the other ranks
-			for (int their_rank = 1; their_rank < uni_size; their_rank++)
-			{
-				// sets the source argument to the rank of the sender
-				source = their_rank;
-
-				// receives the messages
-				MPI_Recv(&recv_message, count, MPI_INT, source, tag, MPI_COMM_WORLD, &status);
-
-				// adds the values together
-				output_sum += recv_message;
-
-			} // end for (int their_rank = 1; their_rank < uni_size; their_rank++)
-			// outputs the result
-			printf("The combined result is %d\n", output_sum);
+			root_task(uni_size);
 		} // end if (0 == my_rank)
 		else // i.e. (0 != my_rank)
 		{
@@ -84,5 +70,33 @@ int main(int argc, char **argv)
 
 	// finalise MPI
 	ierror = MPI_Finalize();
+	return 0;
+}
+
+int root_task(int uni_size)
+{
+
+	// creates and initialies transmission variables
+	int recv_message, count, source, tag;
+	recv_message = source = tag = 0;
+	count = 1;
+	MPI_Status status;
+
+	// creates and intiialises the variable for the final output
+	int output_sum = 0;
+	
+	// iterates through all the other ranks
+	for (int their_rank = 1; their_rank < uni_size; their_rank++)
+	{
+		// sets the source argument to the rank of the sender
+		source = their_rank;
+		// receives the messages
+		MPI_Recv(&recv_message, count, MPI_INT, source, tag, MPI_COMM_WORLD, &status);
+		// adds the values together
+		output_sum += recv_message;
+	} // end for (int their_rank = 1; their_rank < uni_size; their_rank++)
+	// outputs the result
+	printf("The combined result is %d\n", output_sum);
+
 	return 0;
 }

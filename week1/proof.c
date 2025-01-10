@@ -5,6 +5,7 @@
 // function declarations
 int root_task(int uni_size);
 int client_task(int my_rank, int num_arg);
+int check_args(int argc, char **argv);
 
 int main(int argc, char **argv) 
 {
@@ -16,21 +17,7 @@ int main(int argc, char **argv)
 	my_rank = uni_size = 0;
 
 	// declare and initialise the numerical argument variable
-	int num_arg = 0;
-
-	// check the number of arguments
-	if (argc == 2) // program name and numerical argument
-	{
-		// declare and initialise the numerical argument
-		num_arg = atoi(argv[1]);
-	}
-	else // the number of arguments is incorrect
-	{
-		// raise an error
-		fprintf(stderr, "ERROR: You did not provide a numerical argument!\n");
-		fprintf(stderr, "Correct use: mpicc -n 4 proof [NUMBER]\n");
-		return (-1);
-	}
+	int num_arg = check_args(argc, argv);
 
 	// intitalise MPI
 	ierror = MPI_Init(&argc, &argv);
@@ -39,14 +26,10 @@ int main(int argc, char **argv)
 	ierror = MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
 	ierror = MPI_Comm_size(MPI_COMM_WORLD,&uni_size);
 
-	// creates and initialies transmission variables
-	int send_message, recv_message, count, dest, source, tag;
-	send_message = recv_message = dest = source = tag = 0;
-	count = 1;
-	MPI_Status status;
-	
+	// checks there are multiple tasks to communicate with
 	if (uni_size > 1)
 	{
+		// checks which process is running and calls the appropriate task
 		if (0 == my_rank)
 		{
 			root_task(uni_size);
@@ -59,7 +42,7 @@ int main(int argc, char **argv)
 	else // i.e. uni_size <=1
 	{
 		// prints a warning
-		fprintf(stderr, "Unable to communicate with less than 2 processes. MPI communicator size = %d\n", uni_size);
+		fprintf(stderr, "Unable to communicate with fewer than 2 processes. MPI communicator size = %d\n", uni_size);
 	}
 
 	// finalise MPI
@@ -80,19 +63,17 @@ int root_task(int uni_size)
 	int output_sum = 0;
 	
 	// iterates through all the other ranks
-	for (int their_rank = 1; their_rank < uni_size; their_rank++)
+	for (source = 1; source < uni_size; source++)
 	{
-		// sets the source argument to the rank of the sender
-		source = their_rank;
 		// receives the messages
 		MPI_Recv(&recv_message, count, MPI_INT, source, tag, MPI_COMM_WORLD, &status);
-		// adds the values together
+		// adds the values to a running tally
 		output_sum += recv_message;
-	} // end for (int their_rank = 1; their_rank < uni_size; their_rank++)
-	// outputs the result
-	printf("The combined result is %d\n", output_sum);
+	} // end for (source = 1; source < uni_size; source++)
 
-	return 0;
+	// outputs and returns the result
+	printf("The combined result is %d\n", output_sum);
+	return output_sum;
 }
 
 int client_task(int my_rank, int num_arg)
@@ -110,4 +91,29 @@ int client_task(int my_rank, int num_arg)
 
 	// sends the message
 	MPI_Send(&send_message, count, MPI_INT, dest, tag, MPI_COMM_WORLD);
+
+	return 0;
+}
+
+int check_args(int argc, char **argv)
+{
+	// declare and initialise the numerical argument
+	int num_arg = 0;
+
+	// check the number of arguments
+	if (argc == 2) // program name and numerical argument
+	{
+		// declare and initialise the numerical argument
+		num_arg = atoi(argv[1]);
+	}
+	else // the number of arguments is incorrect
+	{
+		// raise an error
+		fprintf(stderr, "ERROR: You did not provide a numerical argument!\n");
+		fprintf(stderr, "Correct use: mpicc -n 4 proof [NUMBER]\n");
+
+		// and exit COMPLETELY
+		exit (-1);
+	}
+	return num_arg;
 }

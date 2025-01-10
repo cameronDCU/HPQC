@@ -6,7 +6,7 @@
 int root_task(int uni_size);
 int client_task(int my_rank, int num_arg);
 int check_args(int argc, char **argv);
-int check_uni_size(int uni_size, int my_rank, int num_arg);
+int check_uni_size(int uni_size);
 int check_task(int uni_size, int my_rank, int num_arg);
 
 int main(int argc, char **argv) 
@@ -14,22 +14,22 @@ int main(int argc, char **argv)
 	// declare and initialise error handling variable
 	int ierror = 0;
 	
-	// declare and initialise rank and size varibles
-	int my_rank, uni_size;
-	my_rank = uni_size = 0;
-
 	// declare and initialise the numerical argument variable
 	int num_arg = check_args(argc, argv);
 
 	// intitalise MPI
 	ierror = MPI_Init(&argc, &argv);
 
+	// declare and initialise rank and size varibles
+	int my_rank, uni_size;
+	my_rank = uni_size = 0;
+
 	// gets the rank and world size
-	ierror = MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
-	ierror = MPI_Comm_size(MPI_COMM_WORLD,&uni_size);
+	ierror = MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+	ierror = MPI_Comm_size(MPI_COMM_WORLD, &uni_size);
 	
 	// checks the universe size is correct
-	check_uni_size(uni_size, my_rank, num_arg);
+	check_uni_size(uni_size);
 
 	// checks what task to do and does it
 	check_task(uni_size, my_rank, num_arg);
@@ -107,13 +107,14 @@ int check_args(int argc, char **argv)
 	return num_arg;
 }
 
-int check_uni_size(int uni_size, int my_rank, int num_arg)
+int check_uni_size(int uni_size)
 {
 	// sets the minimum universe size
 	int min_uni_size = 1;
 	// checks there are sufficient tasks to communicate with
 	if (uni_size >= min_uni_size)
 	{
+		return 0;
 	} // end if (uni_size >= min_uni_size)
 	else // i.e. uni_size < min_uni_size
 	{
@@ -124,6 +125,8 @@ int check_uni_size(int uni_size, int my_rank, int num_arg)
 		// and exit COMPLETELY
 		exit(-1);
 	}
+
+	return 0;
 }
 
 int check_task(int uni_size, int my_rank, int num_arg)

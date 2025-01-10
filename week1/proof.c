@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <mpi.h>
 
-// function declaration
+// function declarations
 int root_task(int uni_size);
+int client_task(int my_rank, int num_arg);
 
 int main(int argc, char **argv) 
 {
@@ -52,14 +53,7 @@ int main(int argc, char **argv)
 		} // end if (0 == my_rank)
 		else // i.e. (0 != my_rank)
 		{
-			// sets the destination for the message
-			dest = 0; // destination is root
-
-			// creates the message
-			send_message = my_rank * num_arg;
-
-			// sends the message
-			MPI_Send(&send_message, count, MPI_INT, dest, tag, MPI_COMM_WORLD);
+			client_task(my_rank, num_arg);
 		} // end else // i.e. (0 != my_rank)
 	} // end if (uni_size > 1)
 	else // i.e. uni_size <=1
@@ -99,4 +93,21 @@ int root_task(int uni_size)
 	printf("The combined result is %d\n", output_sum);
 
 	return 0;
+}
+
+int client_task(int my_rank, int num_arg)
+{
+	// creates and initialies transmission variables
+	int send_message, count, dest, tag;
+	send_message = dest = tag = 0;
+	count = 1;
+
+	// sets the destination for the message
+	dest = 0; // destination is root
+
+	// creates the message
+	send_message = my_rank * num_arg;
+
+	// sends the message
+	MPI_Send(&send_message, count, MPI_INT, dest, tag, MPI_COMM_WORLD);
 }

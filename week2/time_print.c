@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-double to_second_float(struct timespec in_time);
 struct timespec calculate_runtime(struct timespec start_time, struct timespec end_time);
 
 int main(int argc, char **argv) 

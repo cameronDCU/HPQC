@@ -26,6 +26,9 @@ int main(int argc, char **argv)
 	// prints the sum
 	printf("Sum: %d\n", my_sum);
 
+	// if we use malloc, must free when done!
+	free(my_vector);
+
 	return 0;
 }
 

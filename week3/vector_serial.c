@@ -12,7 +12,8 @@ int main(int argc, char **argv)
 	int num_arg = check_args(argc, argv);
 
 	// creates a vector variable
-	int my_vector[num_arg];
+	// int my_vector[num_arg]; // suffers issues for large vectors
+	int* my_vector = malloc (num_arg * sizeof(int));
 	// and initialises every element to zero
 	initialise_vector(my_vector, num_arg, 0);
 

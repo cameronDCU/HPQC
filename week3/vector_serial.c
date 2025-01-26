@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// declares the functions that will be called within main
+// note how declaration lines are similar to the initial line
+// of a function definition, but with a semicolon at the end;
 int check_args(int argc, char **argv);
 void initialise_vector(int vector[], int size, int initial);
 void print_vector(int vector[], int size);
@@ -32,6 +35,7 @@ int main(int argc, char **argv)
 	return 0;
 }
 
+// defines a function to sum a vector of ints into another int
 int sum_vector(int vector[], int size)
 {
 	// creates a variable to hold the sum
@@ -48,6 +52,7 @@ int sum_vector(int vector[], int size)
 	return sum;
 }
 
+// defines a function to initialise all values in a vector to a given inital value
 void initialise_vector(int vector[], int size, int initial)
 {
 	// iterates through the vector
@@ -58,6 +63,7 @@ void initialise_vector(int vector[], int size, int initial)
 	}
 }
 
+// defines a function to print a vector of ints
 void print_vector(int vector[], int size)
 {
 	// iterates through the vector
@@ -68,6 +74,7 @@ void print_vector(int vector[], int size)
 	}
 }
 
+// defines a function that checks your arguments to make sure they'll do what you need
 int check_args(int argc, char **argv)
 {
 	// declare and initialise the numerical argument

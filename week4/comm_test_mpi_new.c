@@ -1,12 +1,10 @@
 #include <stdio.h>
 #include <mpi.h>
-
+    
+    // This function initialises MPI
+    int init_mpi(int argc, char **argv, int *my_rank, int*uni_size){
 	// declare and initialise error handling variable
 	int ierror = 0;
-	
-	// declare and initialise rank and size varibles
-	int my_rank, uni_size;
-	my_rank = uni_size = 0;
 
 	// intitalise MPI
 	ierror = MPI_Init(&argc, &argv);
@@ -14,6 +12,14 @@
 	// gets the rank and world size
 	ierror = MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
 	ierror = MPI_Comm_size(MPI_COMM_WORLD,&uni_size);
+        return ierror;}
+
+    // Main function runs the rest of the code
+    int main(int argc, char **argv) {
+        int my_rank, uni_size, ierror;
+    
+        // Initialize MPI
+        ierror = init_mpi(argc, argv, &my_rank, &uni_size);
 
 	// creates and initialies transmission variables
 	int send_message, recv_message, count, dest, source, tag;

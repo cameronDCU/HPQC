@@ -13,6 +13,18 @@
 	ierror = MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
 	ierror = MPI_Comm_size(MPI_COMM_WORLD,&uni_size);
         return ierror;}
+    
+    // Function to perform root task
+    void root_task(int uni_size) {
+    int recv_message, count = 1, source, tag = 0;
+    MPI_Status status;
+
+    for (int their_rank = 1; their_rank < uni_size; their_rank++) {
+        source = their_rank;
+        MPI_Recv(&recv_message, count, MPI_INT, source, tag, MPI_COMM_WORLD, &status);
+        printf("Hello, I am %d of %d. Received %d from %d\n", 0, uni_size, recv_message, source);
+    }
+}
 
     // Main function runs the rest of the code
     int main(int argc, char **argv) {
@@ -30,21 +42,9 @@
 	if (uni_size > 1)
 	{
 		if (0 == my_rank)
-		{
-			// iterates through all the other ranks
-			for (int their_rank = 1; their_rank < uni_size; their_rank++)
-			{
-				// sets the source argument to the rank of the sender
-				source = their_rank;
-
-				// receives the messages
-				MPI_Recv(&recv_message, count, MPI_INT, source, tag, MPI_COMM_WORLD, &status);
-
-				// prints the message from the sender
-				printf("Hello, I am %d of %d. Received %d from Rank %d\n",
-						my_rank, uni_size, recv_message, source);
-			} // end for (int their_rank = 1; their_rank < uni_size; their_rank++)
-		} // end if (0 == my_rank)
+		{root_task(uni_size)
+		} // end for (int their_rank = 1; their_rank < uni_size; their_rank++)
+		   // end if (0 == my_rank)
 		else // i.e. (0 != my_rank)
 		{
 			// sets the destination for the message

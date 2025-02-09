@@ -1,5 +1,11 @@
 #include <stdio.h>
 #include <mpi.h>
+
+    // Function declarations
+    void init_mpi(int argc, char **argv, int *my_rank, int *uni_size);
+    void root_task(int uni_size);
+    void non_root_task(int my_rank, int uni_size);
+
     
     // This function initialises MPI
     void init_mpi(int argc, char **argv, int *my_rank, int*uni_size){

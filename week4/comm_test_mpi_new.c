@@ -2,17 +2,13 @@
 #include <mpi.h>
     
     // This function initialises MPI
-    int init_mpi(int argc, char **argv, int *my_rank, int*uni_size){
+    void init_mpi(int argc, char **argv, int *my_rank, int*uni_size){
 	// declare and initialise error handling variable
-	int ierror = 0;
-
-	// intitalise MPI
-	ierror = MPI_Init(&argc, &argv);
+	MPI_Init(&argc, &argv);
 
 	// gets the rank and world size
-	ierror = MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
-	ierror = MPI_Comm_size(MPI_COMM_WORLD,&uni_size);
-        return ierror;
+	MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
+	MPI_Comm_size(MPI_COMM_WORLD,&uni_size);
 }
     
     // Function to perform root task

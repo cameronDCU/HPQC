@@ -12,7 +12,8 @@
 	// gets the rank and world size
 	ierror = MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
 	ierror = MPI_Comm_size(MPI_COMM_WORLD,&uni_size);
-        return ierror;}
+        return ierror;
+}
     
     // Function to perform root task
     void root_task(int uni_size) {
@@ -26,6 +27,12 @@
     }
 }
 
+    void non_root_task(int my_rank, int uni_size) {
+    int send_message = my_rank * 10, count = 1, dest = 0, tag = 0;
+
+    MPI_Send(&send_message, count, MPI_INT, dest, tag, MPI_COMM_WORLD);
+    printf("Hello, I am %d of %d. Sent %d to %d\n", my_rank, uni_size, send_message, dest);
+}
     // Main function runs the rest of the code
     int main(int argc, char **argv) {
         int my_rank, uni_size, ierror;
@@ -42,24 +49,12 @@
 	if (uni_size > 1)
 	{
 		if (0 == my_rank)
-		{root_task(uni_size)
+		{root_task(uni_size);
 		} // end for (int their_rank = 1; their_rank < uni_size; their_rank++)
 		   // end if (0 == my_rank)
 		else // i.e. (0 != my_rank)
 		{
-			// sets the destination for the message
-			dest = 0; // destination is root
-
-			// creates the message
-			send_message = my_rank * 10;
-
-			// sends the message
-			MPI_Send(&send_message, count, MPI_INT, dest, tag, MPI_COMM_WORLD);
-
-			// prints the message from the sender
-                        printf("Hello, I am %d of %d. Sent %d to Rank %d\n",
-                                         my_rank, uni_size, send_message, dest);
-
+                 non_root_task(my_rank, uni_size)
 		} // end else // i.e. (0 != my_rank)
 	} // end if (uni_size > 1)
 	else // i.e. uni_size <=1

@@ -3,7 +3,7 @@
 ## Part 1:
 The following summarizes the results of compiling and running `comm_test_mpi.c` with different numbers of processes using `mpicc` and `mpirun`. The objective was to observe variations in execution order and performance.
 The program was compiled using:
-```sh
+sh
 mpicc -o bin/comm_test_mpi comm_test_mpi.c
 
 The program was executed using mpirun -np <num_procs> bin/comm_test_mpi.

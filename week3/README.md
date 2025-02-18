@@ -72,6 +72,6 @@ time ./bin/vector_serial_fib 10
 
 Using the pseudocode from the lecture slides, I created a parallel version of the program named vector_serial_fib_mpi.c. I benchmarked both the serial and parallel implementations and compared their performance.
 
-![Serial vs Parallel Time]()
+![Serial vs Parallel Time](https://github.com/cameronDCU/HPQC/blob/main/week3/parallel_serial_fib.png)
 
 The parallelized code performed worse than the serial implementation for this code. This may be due to the overhead for MPI communication and possible unequal distribution of the workload.

@@ -30,20 +30,28 @@ int main(int argc, char **argv)
     // Calculate the chunk size for each process
     int chunk = num_arg / num_proc;
     int remainder = num_arg % num_proc;
+
+    // Adjust start and stop indices for each process
     int start = rank * chunk + (rank < remainder ? rank : remainder); // Adjust for remainder
     int stop = start + chunk + (rank < remainder ? 1 : 0);
 
-    // Scatter the vector to all processes
-    int* local_vector = malloc((stop - start) * sizeof(int));
-    MPI_Scatter(my_vector, chunk, MPI_INT, local_vector, chunk, MPI_INT, 0, MPI_COMM_WORLD);
+    // Allocate memory for the local vector
+    int local_size = stop - start;
+    int* local_vector = malloc(local_size * sizeof(int));
 
-    // If it's the last process, ensure it gets its portion of the data
-    if (rank == num_proc - 1 && remainder != 0) {
-        MPI_Send(my_vector + start, remainder, MPI_INT, rank, 0, MPI_COMM_WORLD);
-    }
+    // Scatter the vector to all processes
+    MPI_Scatterv(my_vector, // Send buffer
+                 (int[]){chunk + (rank < remainder ? 1 : 0)}, // Send counts for each process
+                 (int[]){0}, // Displacements
+                 MPI_INT, // Data type
+                 local_vector, // Receive buffer
+                 local_size, // Number of elements for each process
+                 MPI_INT, // Data type
+                 0, // Root process
+                 MPI_COMM_WORLD);
 
     // Sum the portion of the vector that each process is responsible for
-    int my_sum = sum_vector(local_vector, stop - start);
+    int my_sum = sum_vector(local_vector, local_size);
 
     // Use MPI to gather the partial sums and reduce them into the total sum
     int total_sum = 0;
@@ -99,4 +107,3 @@ int check_args(int argc, char **argv)
     }
     return num_arg;
 }
-

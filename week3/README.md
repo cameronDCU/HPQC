@@ -53,4 +53,25 @@ output_sum = (1 * 8) + (2 * 8) + (3 * 8) + (4 * 8) = 8 + 16 + 24 + 32 = 80
 This calculation can be simplified to:
 output = ((rank-1)*rank)/2 * input_value
 
+# Part 3: MPI Vector Addition
 
+I began by reading and understanding the serial program, `vector_serial.c`, which performs basic vector addition. The key steps in the serial code include:
+- **Input Validation**: The program checks for correct input (a numerical argument for the vector size).
+- **Vector Initialization**: A vector is created and initialized with Fibonacci numbers.
+- **Summing the Vector**: The program sums all elements of the vector.
+- **Output**: The sum of the vector is printed.
+
+I executed the serial code and benchmarked its performance using the following commands:
+gcc PHY1090/week3/vector_serial.c -o bin/vector_serial
+time ./bin/vector_serial 10
+
+I made a copy of the serial code and modified it to perform a non-trivial mathematical operation. Instead of initializing the vector with zeros, I filled the vector with Fibonacci numbers, which added complexity to the program. The program takes a single numerical argument from the command line that specifies the size of the vector. The program initializes the vector using Fibonacci numbers, with the first two values set as 0 and 1, and the rest calculated based on the Fibonacci relation.
+
+gcc PHY1090/week3/vector_serial_fib.c -o bin/vector_serial_fib
+time ./bin/vector_serial_fib 10
+
+Using the pseudocode from the lecture slides, I created a parallel version of the program named vector_serial_fib_mpi.c. I benchmarked both the serial and parallel implementations and compared their performance.
+
+![Serial vs Parallel Time]()
+
+The parallelized code performed worse than the serial implementation for this code. This may be due to the overhead for MPI communication and possible unequal distribution of the workload.

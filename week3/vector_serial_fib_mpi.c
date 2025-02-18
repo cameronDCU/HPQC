@@ -2,126 +2,101 @@
 #include <stdlib.h>
 #include <mpi.h>
 
-// declares the functions that will be called within main
-// note how declaration lines are similar to the initial line
-// of a function definition, but with a semicolon at the end;
+// Function declarations
 int check_args(int argc, char **argv);
 void initialise_vector(int vector[], int size);
-void print_vector(int vector[], int size);
 int sum_vector(int vector[], int size);
 
 int main(int argc, char **argv)
 {
-	 // MPI Initialization
-        MPI_Init(&argc, &argv);
+    // MPI Initialization
+    MPI_Init(&argc, &argv);
 
-         // Get the rank (process id) and the number of processes
-        int rank, num_proc;
-        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-        MPI_Comm_size(MPI_COMM_WORLD, &num_proc);
-        // declare and initialise the numerical argument variable
-	int num_arg = check_args(argc, argv);
+    // Get the rank (process id) and the number of processes
+    int rank, num_proc;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &num_proc);
 
-	// creates a vector variable
-	// int my_vector[num_arg]; // suffers issues for large vectors
-	int* my_vector = malloc (num_arg * sizeof(int));
-	// and initialises every element to zero
-	initialise_vector(my_vector, num_arg);
+    // Declare and initialize the numerical argument variable
+    int num_arg = check_args(argc, argv);
 
-        // Calculate the chunk size for each process
-        int chunk = num_arg / num_proc;
-        int start = rank * chunk;
-    	int stop = (rank + 1) * chunk;
-	
-       // Ensure the last process handles any remaining elements if needed
-    	if (rank == num_proc - 1) {
-        stop = num_arg;
-    	}
-       
-        // Sum the portion of the vector that each process is responsible for
-       int my_sum = sum_vector(my_vector + start, stop - start);
+    // Create and initialize the vector in the root process (rank 0)
+    int* my_vector = NULL;
+    if (rank == 0) {
+        my_vector = malloc(num_arg * sizeof(int));
+        initialise_vector(my_vector, num_arg);
+    }
 
-       // Use MPI to gather the results from all processes
-       int total_sum = 0;
-       MPI_Reduce(&my_sum, &total_sum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+    // Calculate the chunk size for each process
+    int chunk = num_arg / num_proc;
+    int remainder = num_arg % num_proc;
+    int start = rank * chunk + (rank < remainder ? rank : remainder); // Adjust for remainder
+    int stop = start + chunk + (rank < remainder ? 1 : 0);
 
-       // Only the root process (rank 0) will print the total sum
-       if (rank == 0) {
-           printf("Total Sum: %d\n", total_sum);
-       }
+    // Scatter the vector to all processes
+    int* local_vector = malloc((stop - start) * sizeof(int));
+    MPI_Scatter(my_vector, chunk, MPI_INT, local_vector, chunk, MPI_INT, 0, MPI_COMM_WORLD);
 
-       // Free memory
-       free(my_vector);
+    // If it's the last process, ensure it gets its portion of the data
+    if (rank == num_proc - 1 && remainder != 0) {
+        MPI_Send(my_vector + start, remainder, MPI_INT, rank, 0, MPI_COMM_WORLD);
+    }
 
-       // Finalize MPI
-       MPI_Finalize();
+    // Sum the portion of the vector that each process is responsible for
+    int my_sum = sum_vector(local_vector, stop - start);
 
-       return 0;
+    // Use MPI to gather the partial sums and reduce them into the total sum
+    int total_sum = 0;
+    MPI_Reduce(&my_sum, &total_sum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    // Only the root process (rank 0) will print the total sum
+    if (rank == 0) {
+        printf("Total Sum: %d\n", total_sum);
+    }
+
+    // Free memory
+    free(local_vector);
+    if (rank == 0) {
+        free(my_vector);
+    }
+
+    // Finalize MPI
+    MPI_Finalize();
+
+    return 0;
 }
 
-// defines a function to sum a vector of ints into another int
+// Function to sum a vector of ints into another int
 int sum_vector(int vector[], int size)
 {
-	// creates a variable to hold the sum
-	int sum = 0;
-
-	// iterates through the vector
-	for (int i = 0; i < size; i++)
-	{
-		// sets the elements of the vector to the initial value
-		sum += vector[i];
-	}
-
-	// returns the sum
-	return sum;
+    int sum = 0;
+    for (int i = 0; i < size; i++) {
+        sum += vector[i];
+    }
+    return sum;
 }
 
-// defines a function to initialise all values in a vector to a given inital value
+// Function to initialize all values in a vector to Fibonacci numbers
 void initialise_vector(int vector[], int size)
 {
-    // Handle the first two Fibonacci numbers
-    if (size > 0) vector[0] = 0; // First Fibonacci number
-    if (size > 1) vector[1] = 1; // Second Fibonacci number
-
-    // Calculate Fibonacci numbers for the rest of the vector
-    for (int i = 2; i < size; i++)
-    {
-        vector[i] = vector[i-1] + vector[i-2]; // Fibonacci relation
+    if (size > 0) vector[0] = 0;
+    if (size > 1) vector[1] = 1;
+    for (int i = 2; i < size; i++) {
+        vector[i] = vector[i-1] + vector[i-2];
     }
 }
 
-// defines a function to print a vector of ints
-void print_vector(int vector[], int size)
-{
-	// iterates through the vector
-	for (int i = 0; i < size; i++)
-	{
-		// prints the elements of the vector to the screen
-		printf("%d\n", vector[i]);
-	}
-}
-
-// defines a function that checks your arguments to make sure they'll do what you need
+// Function that checks the program's arguments
 int check_args(int argc, char **argv)
 {
-	// declare and initialise the numerical argument
-	int num_arg = 0;
-
-	// check the number of arguments
-	if (argc == 2) // program name and numerical argument
-	{
-		// declare and initialise the numerical argument
-		num_arg = atoi(argv[1]);
-	}
-	else // the number of arguments is incorrect
-	{
-		// raise an error
-		fprintf(stderr, "ERROR: You did not provide a numerical argument!\n");
-		fprintf(stderr, "Correct use: %s [NUMBER]\n", argv[0]);
-
-		// and exit COMPLETELY
-		exit (-1);
-	}
-	return num_arg;
+    int num_arg = 0;
+    if (argc == 2) {
+        num_arg = atoi(argv[1]);
+    } else {
+        fprintf(stderr, "ERROR: You did not provide a numerical argument!\n");
+        fprintf(stderr, "Correct use: %s [NUMBER]\n", argv[0]);
+        exit(-1);
+    }
+    return num_arg;
 }
 

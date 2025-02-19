@@ -214,29 +214,29 @@ def configure_plot(x_positions, y_positions):
 
 
 def main():
-    """This is the main function that executes the rest of the program
-    Using a main function instead of executing directly in the global 
-    namespace allows for local variables and better control of scope.
-    """
+    """This is the main function that executes the rest of the program."""
     # sets up the variables to manage the animation
     times, interval, fps = configure_animation()
 
     # sets up the points on the string 
     x_positions, y_positions = configure_rope()
 
-    # configures the initial state of the plot, including x and y positions of points on the string
+    # configures the initial state of the plot
     fig, rope = configure_plot(x_positions, y_positions)
 
-    # initialises the python animation 
-    ani = animation.FuncAnimation(fig, animate, times, interval=interval, blit=True, # mandatory animation arguments
-                                  fargs=(rope, y_positions)) # arguments to the animate function
+    # initializes the animation
+    ani = animation.FuncAnimation(fig, animate, times, interval=interval, blit=True, fargs=(rope, y_positions))
+
+    # Ask user for filename
+    user_filename = input("Enter a filename (without extension, default is 'animate_string'): ").strip()
+    if not user_filename:
+        user_filename = "animate_string"
 
     # saves the animation to disk
-    filename = generate_path(basename = 'animate_string', extension = 'gif')
+    filename = generate_path(basename=user_filename, extension="gif")
     ani.save(filename=filename, writer="pillow", fps=fps)
+    print(f"Animation saved as: {filename}")
 
-
-# we use this convention to ensure that if we import functions from this script, it is not executed
 if __name__ == "__main__":
-    main() # this is a good practice to get used to
+    main()
 

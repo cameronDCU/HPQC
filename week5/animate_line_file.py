@@ -190,6 +190,9 @@ def configure_plot(x_positions, y_positions):
     # sets the x and y limits to be plotted
     ax1.set_ylim(-1.1, 1.1)
 
+    # Set the x and y axis labels
+    ax1.set_xlabel('Position along the string')
+    ax1.set_ylabel('Displacement')
     # creates the plot which will be animated
     rope, = ax1.plot(x_positions, y_positions, "o", markersize=5, color="green", label="points on string")
 

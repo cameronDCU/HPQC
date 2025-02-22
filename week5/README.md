@@ -16,3 +16,18 @@ The gif created by animate_line.py was downloaded to the local computer using
 A strategy was devised to parallelize the code whilst still retaining its original goal, in aims to improve performance. The strategy was to partition the points through processes, with each process focusing on updating only its allocated points. Data from all processes will be gathered to the root using MPI_Gather. Then they will write to the output file.
 
 ## Implementation
+
+The MPI code 'string_wave_mpi.c' was created and ran using  mpirun -np <num_processes> ./string_wave_mpi <num_cycles> <num_positions> output.csv for the same number  as parameters as the original code test (10 cycles, 25 positions). This was verified to match the original code as can be seen below.
+
+## Benchmarking
+
+Both the serial and parallel versions were tested with varying positions and for varying cycles in order to see which performed better for this task. When number of positions were varied the cycles were kept constant at a value of 10. When cycles were varied, positions were kept constant at a value of 100.
+
+![Varying Number of Positions](https://github.com/cameronDCU/HPQC/raw/main/week5/varying_pos.png)
+
+![Varying Cycles](https://github.com/cameronDCU/HPQC/raw/main/week5/varying_cycles.png)
+
+
+As can be seen above, the serialized version of the code performed much better than the parallelized version. This couldd be due to the fact there is a lot of unnecessary overhead when setting up the MPI and having the processes communicate with each other. This is because there are many small steps, but the computation at each step is relatively simple, and parallelization does not bring much benefit in this scenario.
+
+# Improving the update_positions() function

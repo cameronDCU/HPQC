@@ -30,4 +30,18 @@ Both the serial and parallel versions were tested with varying positions and for
 
 As can be seen above, the serialized version of the code performed much better than the parallelized version. This couldd be due to the fact there is a lot of unnecessary overhead when setting up the MPI and having the processes communicate with each other. This is because there are many small steps, but the computation at each step is relatively simple, and parallelization does not bring much benefit in this scenario.
 
-# Improving the update_positions() function
+# Step 3: Improving the update_positions() function
+
+The current update_positions() function works by allowing the position of each point in the system take the value of the previous point, with the first point being driven by a sin function. This creates a propagation effect, but lacks physical realism. 
+
+This function was updated in order to reflect real-world physical traits. This is a system where each point behaves as if it is attached to its neighbours with springs. Velocity and position were updated for each point. They were updated using Newtons second law, where a = F/m. The velocity is based on acceleration and the position is updated based on velocity.
+
+The function was updated, there were 5 points, a spring constant k=1, m=1 and a time step size of 0.01. This new function was implemented in both the serial and parallel implementations and can be found in the files named 'string_wave_params_new.c' and 'string_wave_params_mpi_real.c' respectively.
+
+The code was ran in order to see if the behaviour was the same as previous iterations with parameters of 10 cycles and 25 positions.
+
+
+As can be seen above this movement matches the previous behaviour.
+
+Both versions of code were then benchmarked against one another to see if this new function being slightly more complex would cause the parallel code to perform better than the serial implementation. This was not the case as can be seen below, but it should be noted that this function resulted in overall lower runtimes.
+

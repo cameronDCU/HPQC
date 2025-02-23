@@ -40,8 +40,10 @@ The function was updated, there were 5 points, a spring constant k=1, m=1 and a 
 
 The code was ran in order to see if the behaviour was the same as previous iterations with parameters of 10 cycles and 25 positions.
 
+![New Function Wave GIF](https://github.com/cameronDCU/HPQC/blob/main/week5/updated_func_10_25.gif)
 
 As can be seen above this movement matches the previous behaviour.
 
+[Benchmark of update_position() change](https://github.com/cameronDCU/HPQC/blob/main/week5/new_update_function.png)
 Both versions of code were then benchmarked against one another to see if this new function being slightly more complex would cause the parallel code to perform better than the serial implementation. This was not the case as can be seen below, but it should be noted that this function resulted in overall lower runtimes.
 

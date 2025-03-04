@@ -1,0 +1,37 @@
+[33mcommit a3c531331a98143ce0ec87a451cb4b97e23ad6ba[m
+Merge: f1bec5e 59947a5
+Author: Cameron Ogiugo <cameron.ogiugo2@mail.dcu.ie>
+Date:   Sun Feb 23 11:45:07 2025 +0000
+
+    Merge branch 'main' of https://github.com/cameronDCU/HPQC into main
+
+[33mcommit f1bec5e8203fa2d6eba288f4753237b9a8796c1c[m
+Author: Cameron Ogiugo <cameron.ogiugo2@mail.dcu.ie>
+Date:   Sun Feb 23 11:15:43 2025 +0000
+
+    Add LFS tracking for CSVs
+
+[33mcommit b9d943a8f8b56ea50eb723f1337a89e94b07b3f0[m
+Author: Cameron Ogiugo <cameron.ogiugo2@mail.dcu.ie>
+Date:   Sun Feb 23 11:04:49 2025 +0000
+
+    Created New MPICode with updated update_positions func
+
+[33mcommit 9dfc03975d1df81b12bfd95469b0dffb96c2c83d[m
+Author: Cameron Ogiugo <cameron.ogiugo2@mail.dcu.ie>
+Date:   Sat Feb 22 11:33:58 2025 +0000
+
+    Created MPI version of oscillation code
+
+[33mcommit eae6815fb8dd5bc52b8de41a013a122cddd6b0b7[m
+Merge: c4b47c6 07f0b0c
+Author: Cameron Ogiugo <cameron.ogiugo2@mail.dcu.ie>
+Date:   Wed Feb 19 21:50:57 2025 +0000
+
+    Merge branch 'main' of https://github.com/cameronDCU/HPQC into main
+
+[33mcommit c4b47c6d2cea90b5f0c43716be995f9c10d36616[m
+Author: Cameron Ogiugo <cameron.ogiugo2@mail.dcu.ie>
+Date:   Wed Feb 19 21:50:22 2025 +0000
+
+    Created string_wave_params.c
